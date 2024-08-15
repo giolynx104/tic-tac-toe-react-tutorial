@@ -7,6 +7,8 @@ import React from "react";
 import { useEffect } from "react";
 import { useState } from "react";
 
+type GameState = "Won" | "Even" | "Playing";
+
 const checkWinner = (boardState: string[]) => {
   const winningCombinations = [
     [0, 1, 2],
@@ -37,20 +39,24 @@ export function Board({
   player,
   setPlayer,
   setText,
-  ended,
-  setEnded,
+  gameState,
+  setGameState,
 }: {
   player: string;
   setPlayer: React.Dispatch<React.SetStateAction<string>>;
   setText: React.Dispatch<React.SetStateAction<string>>;
-  ended: boolean;
-  setEnded: React.Dispatch<React.SetStateAction<boolean>>;
+  gameState: GameState;
+  setGameState: React.Dispatch<React.SetStateAction<GameState>>;
 }) {
   const [boardState, setBoardState] = useState(new Array(9).fill(""));
   useEffect(() => {
     if (checkWinner(boardState)) {
       setText(`Winner: ${player}`);
-      setEnded(true);
+      setGameState("Won");
+    }
+    if (!boardState.includes("")) {
+      setGameState("Even");
+      setText(`Even`);
     }
     setPlayer(player === "X" ? "O" : "X");
   }, [boardState]);
@@ -66,7 +72,7 @@ export function Board({
             className="aspect-square flex justify-center items-center"
           >
             <Button
-              disabled={ended}
+              disabled={gameState !== "Playing"}
               variant="outlined"
               onClick={() => {
                 if (value !== "") {
@@ -89,10 +95,10 @@ export function Board({
 export default function App() {
   const [player, setPlayer] = useState("O");
   const [text, setText] = useState("Next Player: " + player);
-  const [ended, setEnded] = useState(false);
+  const [gameState, setGameState] = useState<GameState>("Playing");
 
   useEffect(() => {
-    if (!ended) {
+    if (gameState === "Playing") {
       setText("Next Player: " + player);
     }
   }, [player]);
@@ -107,12 +113,12 @@ export default function App() {
           player={player}
           setPlayer={setPlayer}
           setText={setText}
-          ended={ended}
-          setEnded={setEnded}
+          gameState={gameState}
+          setGameState={setGameState}
         />
         <Button
           variant="contained"
-          disabled={!ended}
+          disabled={gameState === "Playing"}
           onClick={() => {
             location.reload();
           }}
