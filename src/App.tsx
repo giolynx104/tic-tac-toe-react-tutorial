@@ -76,7 +76,7 @@ export function Board({
                 newBoardState[index] = player;
                 setBoardState(newBoardState);
               }}
-              className="w-full h-full"
+              className="w-full h-full text-4xl"
             >
               {value}
             </Button>
