@@ -9,7 +9,7 @@ import { useState } from "react";
 
 type GameState = "Won" | "Even" | "Playing";
 
-const checkWinner = (boardState: string[]) => {
+const checkWinning = (boardState: string[]) => {
   const winningCombinations = [
     [0, 1, 2],
     [3, 4, 5],
@@ -28,11 +28,11 @@ const checkWinner = (boardState: string[]) => {
       boardState[a] === boardState[b] &&
       boardState[a] === boardState[c]
     ) {
-      return true;
+      return eachCombination;
     }
   }
 
-  return false;
+  return null;
 };
 
 export function Board({
@@ -49,10 +49,15 @@ export function Board({
   setGameState: React.Dispatch<React.SetStateAction<GameState>>;
 }) {
   const [boardState, setBoardState] = useState(new Array(9).fill(""));
+  const [winningCombination, setWinningCombination] = useState<
+    number[] | null
+  >();
   useEffect(() => {
-    if (checkWinner(boardState)) {
+    let winningCombination = checkWinning(boardState);
+    if (winningCombination !== null) {
       setText(`Winner: ${player}`);
       setGameState("Won");
+      setWinningCombination(winningCombination);
     }
     if (!boardState.includes("")) {
       setGameState("Even");
@@ -82,7 +87,11 @@ export function Board({
                 newBoardState[index] = player;
                 setBoardState(newBoardState);
               }}
-              className="w-full h-full text-4xl"
+              className={`${
+                winningCombination?.includes(index)
+                  ? "disabled:border-green-400 disabled:border-2 disabled:text-green-400"
+                  : ""
+              }   w-full h-full text-4xl`}
             >
               {value}
             </Button>
