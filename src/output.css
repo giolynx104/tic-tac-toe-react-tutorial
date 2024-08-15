@@ -164,26 +164,35 @@
   justify-content: center
 }
 
+#root .bg-red-500 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(239 68 68 / var(--tw-bg-opacity))
+}
+
 #root .text-center {
   text-align: center
-}
-
-#root .text-xl {
-  font-size: 1.25rem;
-  line-height: 1.75rem
-}
-
-#root .text-3xl {
-  font-size: 1.875rem;
-  line-height: 2.25rem
-}
-
-#root .text-5xl {
-  font-size: 3rem;
-  line-height: 1
 }
 
 #root .text-4xl {
   font-size: 2.25rem;
   line-height: 2.5rem
+}
+
+#root .text-green-400 {
+  --tw-text-opacity: 1;
+  color: rgb(74 222 128 / var(--tw-text-opacity))
+}
+
+#root .disabled\:border-2:disabled {
+  border-width: 2px
+}
+
+#root .disabled\:border-green-400:disabled {
+  --tw-border-opacity: 1;
+  border-color: rgb(74 222 128 / var(--tw-border-opacity))
+}
+
+#root .disabled\:text-green-400:disabled {
+  --tw-text-opacity: 1;
+  color: rgb(74 222 128 / var(--tw-text-opacity))
 }
