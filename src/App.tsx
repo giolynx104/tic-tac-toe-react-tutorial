@@ -1,6 +1,7 @@
 import { Box } from "@mui/material";
 import { Typography } from "@mui/material";
 import { Stack } from "@mui/material";
+import { Grid } from "@mui/material";
 import { Button } from "@mui/material";
 import React from "react";
 import { useEffect } from "react";
@@ -32,100 +33,69 @@ const checkWinner = (boardState: string[]) => {
   return false;
 };
 
-export function Square({
-  position,
-  player,
-  setPlayer,
-  boardState,
-  setBoardState,
-}: {
-  position: number;
-  player: string;
-  setPlayer: React.Dispatch<React.SetStateAction<string>>;
-  boardState: string[];
-  setBoardState: React.Dispatch<React.SetStateAction<string[]>>;
-}) {
-  return (
-    <Button
-      variant="outlined"
-      onClick={() => {
-        if (boardState[position] !== "") {
-          return;
-        }
-        let newBoardState = [...boardState];
-        newBoardState[position] = player;
-        setBoardState(newBoardState);
-        setPlayer(player === "X" ? "O" : "X");
-      }}
-      className="aspect-square"
-    >
-      {boardState[position]}
-    </Button>
-  );
-}
-
-export function BoardRow({
-  startPosition,
-  player,
-  setPlayer,
-  boardState,
-  setBoardState,
-}: {
-  startPosition: number;
-  player: string;
-  setPlayer: React.Dispatch<React.SetStateAction<string>>;
-  boardState: string[];
-  setBoardState: React.Dispatch<React.SetStateAction<string[]>>;
-}) {
-  let boardRow: JSX.Element[] = [];
-  for (let i = 0; i < 3; i++) {
-    boardRow.push(
-      <Square
-        key={startPosition + i}
-        position={startPosition + i}
-        player={player}
-        setPlayer={setPlayer}
-        boardState={boardState}
-        setBoardState={setBoardState}
-      />
-    );
-  }
-  return <Stack direction="row">{boardRow}</Stack>;
-}
 export function Board({
   player,
   setPlayer,
   setText,
+  ended,
+  setEnded,
 }: {
   player: string;
   setPlayer: React.Dispatch<React.SetStateAction<string>>;
   setText: React.Dispatch<React.SetStateAction<string>>;
+  ended: boolean;
+  setEnded: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   const [boardState, setBoardState] = useState(new Array(9).fill(""));
   useEffect(() => {
     if (checkWinner(boardState)) {
-      setText(`Winner: ${player === "X" ? "O" : "X"}`);
+      setText(`Winner: ${player}`);
+      setEnded(true);
     }
-  });
-  let board: JSX.Element[] = [];
-  for (let i = 0; i < 3; i++) {
-    board.push(
-      <BoardRow
-        key={i}
-        startPosition={3 * i}
-        player={player}
-        setPlayer={setPlayer}
-        boardState={boardState}
-        setBoardState={setBoardState}
-      />
-    );
-  }
-  return <Stack>{board}</Stack>;
+    setPlayer(player === "X" ? "O" : "X");
+  }, [boardState]);
+
+  return (
+    <Grid container>
+      {boardState.map((value, index) => {
+        return (
+          <Grid
+            item
+            xs={4}
+            key={index}
+            className="aspect-square flex justify-center items-center"
+          >
+            <Button
+              disabled={ended}
+              variant="outlined"
+              onClick={() => {
+                if (value !== "") {
+                  return;
+                }
+                let newBoardState = [...boardState];
+                newBoardState[index] = player;
+                setBoardState(newBoardState);
+              }}
+              className="w-full h-full"
+            >
+              {value}
+            </Button>
+          </Grid>
+        );
+      })}
+    </Grid>
+  );
 }
 export default function App() {
-  const [player, setPlayer] = useState("X");
+  const [player, setPlayer] = useState("O");
   const [text, setText] = useState("Next Player: " + player);
-  const [won, setWon] = useState(false);
+  const [ended, setEnded] = useState(false);
+
+  useEffect(() => {
+    if (!ended) {
+      setText("Next Player: " + player);
+    }
+  }, [player]);
 
   return (
     <Box className="w-full flex justify-center items-center">
@@ -133,10 +103,16 @@ export default function App() {
         <Typography className="text-center" variant="body1">
           {text}
         </Typography>
-        <Board player={player} setPlayer={setPlayer} setText={setText} />
+        <Board
+          player={player}
+          setPlayer={setPlayer}
+          setText={setText}
+          ended={ended}
+          setEnded={setEnded}
+        />
         <Button
           variant="contained"
-          disabled={!won}
+          disabled={!ended}
           onClick={() => {
             location.reload();
           }}
